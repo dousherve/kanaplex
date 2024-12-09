@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "kanaplex"
+version = "0.2.0"
+description = ""
+authors = ["dousherve <louisdousherve@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+[tool.poetry.scripts]
+kanaplex = "kanaplex.cli:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
