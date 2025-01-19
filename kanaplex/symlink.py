@@ -2,6 +2,33 @@ import os
 import re
 from pathlib import Path
 
+# TODO: implement preferred_contains:
+#       if there are 2 files for the same episode, prefer one that contains
+#       the string 'preferred_contains'
+
+# TODO: implement manual single episode symlink
+
+def parse_episode_id(episode_path: Path) -> str:
+    """
+    Parses the episode ID from a given file path and returns it
+    in the format 'SXXEXX'.
+
+    The function uses the following rules:
+    - Assumes season 1 if no season information is provided.
+    - Returns an empty string ("") if no valid episode number is found.
+
+    :param episode_path: Path to the episode.
+    :return: The episode identifier (e.g., 'S01E01').
+    """
+    match = re.search(r"(?:S(\d+))?\D*(\d+)", episode_path.name, re.IGNORECASE)
+
+    if not match or not match.group(2):
+        return ""
+
+    season = int(match.group(1)) if match.group(1) else 1
+    episode = int(match.group(2))
+
+    return f"S{season:02d}E{episode:02d}"
 
 def find_existing_episodes(dest_dir: Path):
     """
@@ -16,12 +43,10 @@ def find_existing_episodes(dest_dir: Path):
 
     for file in dest_dir.iterdir():
         if file.is_file():
-            match = re.search(r"(S\d{2}E\d{2})", file.name)
-            if match:
-                episode_id = match.group(1)
+            if episode_id := parse_episode_id(file):
                 existing_episodes.add(episode_id)
 
-    print(f"  - Found {len(existing_episodes)} epsiode(s) in Plex.")
+    print(f"  - Found {len(existing_episodes)} episode(s) in Plex.")
     return existing_episodes
 
 
@@ -35,12 +60,10 @@ def find_available_episodes(source_dir: Path):
     episodes = {}
     for file in source_dir.iterdir():
         if file.is_file():
-            match = re.search(r"(S\d{2}E\d{2})", file.name)
-            if match:
-                episode_id = match.group(1)
+            if episode_id := parse_episode_id(file):
                 episodes[episode_id] = file
 
-    print(f"  - Found {len(episodes)} epsiode(s) in the torrent folder.")
+    print(f"  - Found {len(episodes)} episode(s) in the torrent folder.")
     return episodes
 
 

@@ -29,7 +29,10 @@ def parse_config(directory: Path):
     except KeyError as e:
         raise ConfigError(f"Missing required config key '{e}'")
 
+    preferred_contains = config["settings"].get("preferred_contains", "")
+
     return {
         "name": name,
         "destination": destination,
+        "preferred_contains": preferred_contains
     }
