@@ -8,6 +8,7 @@ from pathlib import Path
 
 # TODO: implement manual single episode symlink
 
+# TODO: Not working for file names like "I.Have.S01E03.[...].mkv"
 def parse_episode_id(episode_path: Path) -> str:
     """
     Parses the episode ID from a given file path and returns it
