@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "kanaplex"
-version = "0.3.1"
+version = "0.4"
 description = ""
 authors = ["dousherve <louisdousherve@gmail.com>"]
 readme = "README.md"

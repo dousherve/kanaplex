@@ -4,7 +4,7 @@ from pathlib import Path
 from kanaplex.config import parse_config, ConfigError, CFG_FILENAME
 from kanaplex.symlink import create_symlink_for_missing_episodes
 
-VERSION = "0.3.1"
+VERSION = "0.4"
 
 def main():
     parser = argparse.ArgumentParser(description=f"Symlink downloaded episodes based on '{CFG_FILENAME}' config file.")

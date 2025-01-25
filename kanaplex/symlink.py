@@ -1,5 +1,4 @@
 import os
-import re
 from pathlib import Path
 
 # TODO: implement preferred_contains:
@@ -8,28 +7,54 @@ from pathlib import Path
 
 # TODO: implement manual single episode symlink
 
-# TODO: Not working for file names like "I.Have.S01E03.[...].mkv"
 def parse_episode_id(episode_path: Path) -> str:
     """
-    Parses the episode ID from a given file path and returns it
-    in the format 'SXXEXX'.
+    Parses an episode ID from a given file name and returns it in the format 'SXXEYY'.
 
-    The function uses the following rules:
-    - Assumes season 1 if no season information is provided.
-    - Returns an empty string ("") if no valid episode number is found.
+    If the season is not explicitly provided, season 1 is assumed (S01).
 
-    :param episode_path: Path to the episode.
-    :return: The episode identifier (e.g., 'S01E01').
+    Parameters:
+        episode_path (Path): The path to the file whose name contains episode information.
+
+    Returns:
+        str: The parsed episode ID in the format 'SXXEYY', or an empty string if no valid episode number is found.
     """
-    match = re.search(r"(?:S(\d+))?\D*(\d+)", episode_path.name, re.IGNORECASE)
+    # Split the filename into parts based on spaces, dots, or dashes
+    parts = episode_path.stem.replace('.', ' ').replace('-', ' ').split()
 
-    if not match or not match.group(2):
-        return ""
+    season = 1
+    episode = None
 
-    season = int(match.group(1)) if match.group(1) else 1
-    episode = int(match.group(2))
+    for i, part in enumerate(parts):
+        part_lower = part.lower()
 
-    return f"S{season:02d}E{episode:02d}"
+        # Check for "SXXEYY" pattern
+        if "s" in part_lower and "e" in part_lower:
+            if (version_index := part_lower.find('v')) >= 0:
+                part_lower = part_lower[:version_index]
+            try:
+                s_index = part_lower.index("s") + 1
+                e_index = part_lower.index("e") + 1
+                season = int(part_lower[s_index:e_index - 1])
+                episode = int(part_lower[e_index:])
+                break
+            except ValueError:
+                continue
+
+        # Check for "SXX" or "EYY" separately
+        elif part_lower.startswith("s") and part_lower[1:].isdigit():
+            season = int(part_lower[1:])
+        elif part_lower.startswith("e") and part_lower[1:].isdigit():
+            episode = int(part_lower[1:])
+
+        # Check for standalone episode number as last part
+        elif part.isdigit() and i == len(parts) - 1:
+            episode = int(part)
+
+    if episode is not None:
+        return f"S{season:02d}E{episode:02d}"
+
+    return ""
 
 def find_existing_episodes(dest_dir: Path):
     """
