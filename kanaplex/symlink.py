@@ -7,6 +7,8 @@ from pathlib import Path
 
 # TODO: implement manual single episode symlink
 
+# TODO: symlink the newest version if it exists (e.g. S01E01v2)
+
 def parse_episode_id(episode_path: Path) -> str:
     """
     Parses an episode ID from a given file name and returns it in the format 'SXXEYY'.
